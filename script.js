@@ -2,52 +2,42 @@
 // MOBILE HAMBURGER MENU
 // ============================================
 const hamburger = document.getElementById('hamburger');
-const navLinks = document.getElementById('navLinks');
-
-hamburger.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-});
-
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('open');
-    });
-    // Mobile menu toggle
-const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 
-hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-});
-
-// Close menu when a link is clicked
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
+if (hamburger && navMenu) {
+    hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
     });
-});
-});
+
+    // Close menu when a link is clicked
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+        });
+    });
+}
 
 // ============================================
 // BACK TO TOP
 // ============================================
 const backToTop = document.getElementById('backToTop');
 
-window.addEventListener('scroll', () => {
-    backToTop.classList.toggle('visible', window.scrollY > 400);
-});
+if (backToTop) {
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('visible', window.scrollY > 400);
+    });
 
-backToTop.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
 // ============================================
-// HERO SLIDESHOW - FIXED!
+// HERO SLIDESHOW
 // ============================================
 const heroSlides = document.querySelectorAll('.hero-slide');
 let currentSlide = 0;
 
-// Hide all slides except the first one
 function showSlide(index) {
     heroSlides.forEach((slide, i) => {
         slide.classList.remove('active');
@@ -57,7 +47,6 @@ function showSlide(index) {
     });
 }
 
-// Go to next slide
 function nextSlide() {
     currentSlide = (currentSlide + 1) % heroSlides.length;
     showSlide(currentSlide);
@@ -66,7 +55,7 @@ function nextSlide() {
 
 // Create dots
 const dotsContainer = document.getElementById('slideDots');
-if (dotsContainer) {
+if (dotsContainer && heroSlides.length > 0) {
     heroSlides.forEach((_, index) => {
         const dot = document.createElement('span');
         dot.className = `dot ${index === 0 ? 'active' : ''}`;
@@ -81,6 +70,7 @@ if (dotsContainer) {
 }
 
 function updateDots() {
+    if (!dotsContainer) return;
     const dots = dotsContainer.querySelectorAll('.dot');
     dots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentSlide);
@@ -91,14 +81,18 @@ function updateDots() {
 let slideInterval = setInterval(nextSlide, 4000);
 
 // Pause on hover
-const hero = document.getElementById('hero');
-hero.addEventListener('mouseenter', () => clearInterval(slideInterval));
-hero.addEventListener('mouseleave', () => {
-    slideInterval = setInterval(nextSlide, 4000);
-});
+const heroSection = document.getElementById('hero');
+if (heroSection) {
+    heroSection.addEventListener('mouseenter', () => clearInterval(slideInterval));
+    heroSection.addEventListener('mouseleave', () => {
+        slideInterval = setInterval(nextSlide, 4000);
+    });
+}
 
 // Show first slide
-showSlide(0);
+if (heroSlides.length > 0) {
+    showSlide(0);
+}
 
 // ============================================
 // GALLERY CAROUSEL
@@ -111,7 +105,6 @@ let carouselIndex = 0;
 
 if (track) {
     const slides = track.querySelectorAll('.carousel-slide');
-    const totalSlides = slides.length;
 
     // Create dots
     if (dotsCarousel) {
@@ -125,12 +118,12 @@ if (track) {
     }
 
     function goToCarousel(index) {
-        const dots = dotsCarousel.querySelectorAll('.dot');
+        const dots = dotsCarousel ? dotsCarousel.querySelectorAll('.dot') : [];
         const slideWidth = slides[0].getBoundingClientRect().width;
-        
+
         if (index < 0) index = slides.length - 1;
         if (index >= slides.length) index = 0;
-        
+
         track.style.transform = `translateX(-${index * slideWidth}px)`;
         slides.forEach((s, i) => s.classList.toggle('active', i === index));
         dots.forEach((d, i) => d.classList.toggle('active', i === index));
@@ -181,3 +174,46 @@ if (quoteForm) {
         quoteForm.reset();
     });
 }
+
+// ============================================
+// SCROLL ANIMATIONS
+// ============================================
+const hiddenElements = document.querySelectorAll('.scroll-hidden');
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('scroll-visible');
+        }
+    });
+}, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+});
+
+hiddenElements.forEach((el) => observer.observe(el));
+
+// ============================================
+// SCROLL PROGRESS BAR
+// ============================================
+const progressBar = document.getElementById('scrollProgress');
+
+if (progressBar) {
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        progressBar.style.width = progress + '%';
+    });
+}
+
+// ============================================
+// PARALLAX EFFECT ON HERO
+// ============================================
+window.addEventListener('scroll', () => {
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        const scrolled = window.scrollY;
+        hero.style.backgroundPositionY = scrolled * 0.5 + 'px';
+    }
+});
