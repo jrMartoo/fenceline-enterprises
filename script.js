@@ -213,7 +213,7 @@ if (progressBar) {
 window.addEventListener('scroll', () => {
     const hero = document.querySelector('.hero');
     if (hero) {
-        const scrolled = window.scrollY;
+       const scrolled = window.scrollY;
         hero.style.backgroundPositionY = scrolled * 0.5 + 'px';
     }
 });
